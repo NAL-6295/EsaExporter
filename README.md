@@ -7,5 +7,5 @@ dotnet EsaExporter.dll token teamname option
 ```
 
 optionは
-Json（Json形式で一旦Postとimageを保存するので後でどうとでもできるやつ)
-Markdown(md形式で保存するが、他の情報は落ちる。ダウンロードしたイメージに対するパスも解決する）
+- Json（Json形式で一旦Postとimageを保存するので後でどうとでもできるやつ)
+- Markdown(md形式で保存するが、他の情報は落ちる。ダウンロードしたイメージに対するパスも解決する）
