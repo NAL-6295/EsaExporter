@@ -119,7 +119,15 @@ namespace EsaExportor
 
                     foreach (var item in images)
                     {
-                        var url = item.Attributes["src"].Value;
+                        string url = "";
+                        try
+                        {
+                            url = item.Attributes["src"].Value;
+                        }
+                        catch (Exception)
+                        {
+                            continue;
+                        }
                         var fileName = files.FirstOrDefault(x => item.Attributes["src"].Value.Contains(x));
                         if(!string.IsNullOrEmpty(fileName))
                         {
