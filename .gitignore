@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 EsaExportor/Properties/launchSettings.json
+EsaExporter.go/debug
