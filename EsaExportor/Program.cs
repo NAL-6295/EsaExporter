@@ -15,6 +15,7 @@ namespace EsaExportor
 
         private static string fromTeam;
         private static string filePath;
+        private static string teamPostUrl;
 
         public enum ExportOption
         {
@@ -32,11 +33,15 @@ namespace EsaExportor
             var option = Enum.Parse<ExportOption>(args[2]);
             filePath = $@"d:\{fromTeam}.esa.io";
 
+            teamPostUrl = $"https://{fromTeam}.esa.io/posts/";
+
             if (!System.IO.Directory.Exists(filePath))
             {
                 System.IO.Directory.CreateDirectory(filePath);
             }
 
+
+            var indexContent = "## 索引\n";
 
             using (var request = new System.Net.WebClient())
             {
@@ -55,6 +60,8 @@ namespace EsaExportor
                     foreach (var post in jsons.posts)
                     {
                         ToLocal(post, option);
+                        indexContent += $"- [{post.full_name}]({post.number}.md)\n";
+
                     }
                     Console.WriteLine($"page:{page}");
                     page++;
@@ -68,6 +75,10 @@ namespace EsaExportor
 
             }
 
+            if (option == ExportOption.Markdown)
+            {
+                System.IO.File.WriteAllText(System.IO.Path.Combine(filePath, "index.md"), indexContent);
+            }
 
         }
 
@@ -90,9 +101,11 @@ namespace EsaExportor
             var images = html.DocumentNode
                 .SelectNodes(@"//img");
 
-            var tite = new String(post.full_name.Replace("/","_").Where(x => !System.IO.Path.GetInvalidFileNameChars().Contains(x)).ToArray());
-            var path = option == ExportOption.Json ? $@"{filePath}\{post.number}" :
-                $@"{filePath}\{tite}";
+            var anchors = html.DocumentNode
+                .SelectNodes(@"//a");
+
+            var tite = new String(post.full_name.Replace("/", "_").Where(x => !System.IO.Path.GetInvalidFileNameChars().Contains(x)).ToArray());
+            var path = $@"{filePath}\{post.number}";
 
 
             if (images != null)
@@ -101,7 +114,7 @@ namespace EsaExportor
 
             }
 
-            if(option == ExportOption.Json)
+            if (option == ExportOption.Json)
             {
                 var jsonData = JsonSerializer.Serialize(post);
 
@@ -129,10 +142,36 @@ namespace EsaExportor
                             continue;
                         }
                         var fileName = files.FirstOrDefault(x => item.Attributes["src"].Value.Contains(x));
-                        if(!string.IsNullOrEmpty(fileName))
+                        if (!string.IsNullOrEmpty(fileName))
                         {
-                            md = md.Replace(url, $@"./{tite}/{fileName}");
+                            md = md.Replace(url, $@"./{post.number}/{fileName}");
                         }
+                    }
+
+
+                }
+
+                if (anchors != null)
+                {
+                    foreach (var item in anchors)
+                    {
+                        string url = "";
+                        try
+                        {
+                            url = item.Attributes["href"].Value;
+                        }
+                        catch (Exception)
+                        {
+                            continue;
+                        }
+
+                        if (url.IndexOf(teamPostUrl) < 0)
+                        {
+                            continue;
+                        }
+
+                        md = md.Replace(url, $"./{post.number}.md");
+
                     }
 
                 }
