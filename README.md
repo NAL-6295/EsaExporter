@@ -13,4 +13,6 @@ optionは
     - md形式で保存するが、他の情報は落ちる。
     - ダウンロードしたイメージに対するパスも解決する
     - esaの記事間のリンクもローカルで解決する
-    - 全記事の索引用にindex.mdを生成するｓ
+    - 全記事の索引用にindex.mdを生成する
+    
+golang版は[こちら](https://github.com/NAL-6295/goEsaExporter)
